@@ -1,6 +1,7 @@
 
 import win32gui
 
+
 def get_window_titles():
     def callback(hwnd, extra):
         window_text = win32gui.GetWindowText(hwnd)
