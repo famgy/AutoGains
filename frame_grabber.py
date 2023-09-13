@@ -8,6 +8,7 @@ import skimage.io
 
 from redis.client import StrictRedis
 
+import window_controller
 from game_frame import GameFrame
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -15,7 +16,9 @@ images_path = os.path.join(current_dir, "images")
 
 
 class FrameGrabber:
-    def __init__(self, window_geometry=None):
+    def __init__(self, window_id, window_geometry=None):
+        self.window_id = window_id
+
         if window_geometry is None:
             raise ValueError("window_geometry must be provided.")
 
@@ -41,6 +44,9 @@ class FrameGrabber:
 
     def start(self):
         while True:
+            if not window_controller.is_window_focused(self.window_id):
+                return
+
             cycle_start = time.time()
 
             frame = self.grab_frame()
@@ -67,8 +73,6 @@ class FrameGrabber:
             if list_size > 50:
                 break
 
-
-
             # monitor = {"top": self.y_offset, "left": self.x_offset, "width": self.width, "height": self.height}
             # output = "{}/frame-{}x{}_{}x{}.png".format(images_path,
             #                                            monitor['top'],
@@ -80,7 +84,6 @@ class FrameGrabber:
             # mss.tools.to_png(frame_img.rgb, frame_img.size, output=output)
             #
             # break
-
 
     def grab_frame(self):
         monitor = {"top": self.y_offset, "left": self.x_offset, "width": self.width, "height": self.height}

@@ -11,8 +11,10 @@ from keras.callbacks import ModelCheckpoint
 
 import window_controller
 from frame_grabber import FrameGrabber
-from machine_learning.train_container import TrainContainer
+from machine_learning.ml_toolbox import TrainContainer
 from teammate_round_bot import round_auto
+
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'T'
 
 #
 # def create_training_and_validation_sets(file_paths, validation_set_probability=0.1, seed=None):
@@ -129,17 +131,20 @@ if __name__ == '__main__':
 
     # window_controller.get_window_titles()
 
-    window_id = window_controller.locate_window("AOSP on blueline")
-    window_controller.bring_window_to_top(window_id)
-    window_controller.focus_window(window_id)
-    window_geometry = window_controller.get_window_geometry(window_id)
+    # window_id = window_controller.locate_window("AOSP on blueline")
+    # window_controller.bring_window_to_top(window_id)
+    # window_controller.focus_window(window_id)
+    # window_geometry = window_controller.get_window_geometry(window_id)
 
     # screen capture
-    frame_grabber = FrameGrabber(window_geometry)
-    frame_grabber.start()
+    # frame_grabber = FrameGrabber(window_id, window_geometry)
+    # frame_grabber.start()
 
     # collect frames
-    frame_grabber.collect_frames_for_context("login_role")
+    # frame_grabber.collect_frames_for_context("login_role")
+    # frame_grabber.collect_frames_for_context("region_luoyang")
+    # frame_grabber.collect_frames_for_context("role_attributes")
+    # frame_grabber.collect_frames_for_context("role_inventory")
 
 
     # train
