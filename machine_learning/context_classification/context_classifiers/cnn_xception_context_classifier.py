@@ -1,9 +1,10 @@
 import os
 
-from keras.applications.xception import Xception
+from keras.applications.xception import Xception, preprocess_input
 from keras.layers import Dense, GlobalAveragePooling2D
 from keras.models import Model
 from keras.callbacks import ModelCheckpoint
+from keras_preprocessing.image import ImageDataGenerator
 
 
 class CNNXceptionContextClassifier:
@@ -85,3 +86,19 @@ class CNNXceptionContextClassifier:
             sample_count += len(files)
 
         return sample_count
+
+    def prepare_generators(self):
+        training_data_generator = ImageDataGenerator(preprocessing_function=preprocess_input)
+        validation_data_generator = ImageDataGenerator(preprocessing_function=preprocess_input)
+
+        self.training_generator = training_data_generator.flow_from_directory(
+            "datasets/current/training",
+            target_size=(self.input_shape[0], self.input_shape[1]),
+            batch_size=32
+        )
+
+        self.validation_generator = validation_data_generator.flow_from_directory(
+            "datasets/current/validation",
+            target_size=(self.input_shape[0], self.input_shape[1]),
+            batch_size=32
+        )

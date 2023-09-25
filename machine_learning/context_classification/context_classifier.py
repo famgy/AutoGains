@@ -34,7 +34,7 @@ class ContextClassifier:
 
     def executable_train(self, model_path="datasets/context_classifier.model"):
         # train datasets
-        context_classifier = CNNXceptionContextClassifier(self.input_shape, self.training_generator, self.validation_generator)
+        context_classifier = CNNXceptionContextClassifier(self.training_generator, self.validation_generator, self.input_shape)
         context_classifier.train()
 
         # save datasets
@@ -42,28 +42,33 @@ class ContextClassifier:
             context_classifier.classifier.save(model_path)
             print("Success! Model was saved to " + model_path)
 
-    def executable_predict(self, input_frame, model_path="datasets/context_classifier.model"):
-        classifier = load_model(model_path)
+    def executable_predict(self, frame_path, model_path="datasets/context_classifier.model"):
+        try:
+            classifier = load_model(model_path)
+            input_frame = skimage.io.imread(frame_path)
 
-        # µ÷ÓÃ normalize º¯ÊıÀ´±ê×¼»¯Í¼Ïñ
-        normalized_frame = self.normalize(input_frame)
+            # è°ƒç”¨ normalize å‡½æ•°æ¥æ ‡å‡†åŒ–å›¾åƒ
+            normalized_frame = self.normalize(input_frame)
 
-        # Ê¹ÓÃÄ£ĞÍ½øĞĞÔ¤²â
-        predictions = classifier.predict(np.expand_dims(normalized_frame, axis=0))
+            # ä½¿ç”¨æ¨¡å‹è¿›è¡Œé¢„æµ‹
+            predictions = classifier.predict(np.expand_dims(normalized_frame, axis=0))
 
-        # »ñÈ¡Ô¤²â½á¹û
-        class_indices = np.argmax(predictions, axis=1)
-        predicted_class_index = class_indices[0]
+            # è·å–é¢„æµ‹ç»“æœ
+            class_indices = np.argmax(predictions, axis=1)
+            predicted_class_index = class_indices[0]
 
-        # »ñÈ¡Àà±ğ±êÇ©
-        predicted_label = self.class_labels[predicted_class_index]
+            # è·å–ç±»åˆ«æ ‡ç­¾
+            predicted_label = self.class_labels[predicted_class_index]
 
-        # »ñÈ¡Ô¤²âµÄÀà±ğ¸ÅÂÊ·ÖÊı
-        predicted_score = predictions[0][predicted_class_index]
+            # è·å–é¢„æµ‹çš„ç±»åˆ«æ¦‚ç‡åˆ†æ•°
+            predicted_score = predictions[0][predicted_class_index]
 
-        print("Predicted Class Index:", predicted_class_index)
-        print("Predicted Class Label:", predicted_label)
-        print("Predicted Class Score:", predicted_score)
+            print("Predicted Class Index:", predicted_class_index)
+            print("Predicted Class Label:", predicted_label)
+            print("Predicted Class Score:", predicted_score)
+        except Exception as e:
+            raise e
+
 
     def prepare_generators(self):
         training_data_generator = ImageDataGenerator(preprocessing_function=preprocess_input)
@@ -84,14 +89,14 @@ class ContextClassifier:
         self.class_labels = {v: k for k, v in self.training_generator.class_indices.items()}
 
     def normalize(self, data, target_min=0, target_max=1):
-        # ¼ÆËãÊı¾İµÄ¾ùÖµºÍ±ê×¼²î
+        # è®¡ç®—æ•°æ®çš„å‡å€¼å’Œæ ‡å‡†å·®
         data_mean = np.mean(data)
         data_std = np.std(data)
 
-        # ½«Êı¾İ±ê×¼»¯µ½¾ùÖµÎª0£¬±ê×¼²îÎª1µÄ·Ö²¼
+        # å°†æ•°æ®æ ‡å‡†åŒ–åˆ°å‡å€¼ä¸º0ï¼Œæ ‡å‡†å·®ä¸º1çš„åˆ†å¸ƒ
         normalized_data = (data - data_mean) / data_std
 
-        # ½«±ê×¼»¯ºóµÄÊı¾İÓ³Éäµ½Ä¿±ê·¶Î§
+        # å°†æ ‡å‡†åŒ–åçš„æ•°æ®æ˜ å°„åˆ°ç›®æ ‡èŒƒå›´
         min_value = np.min(normalized_data)
         max_value = np.max(normalized_data)
         normalized_data = (normalized_data - min_value) / (max_value - min_value) * (

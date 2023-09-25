@@ -15,6 +15,9 @@ from machine_learning.ml_toolbox import TrainContainer
 from teammate_round_bot import round_auto
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'T'
+current_dir = os.path.dirname(os.path.abspath(__file__))
+images_path = os.path.join(current_dir, "images")
+
 
 #
 # def create_training_and_validation_sets(file_paths, validation_set_probability=0.1, seed=None):
@@ -149,7 +152,14 @@ if __name__ == '__main__':
 
     # train
     train_container = TrainContainer()
-    train_container.train_context()
+    # train_container.train_context()
+
+    # frame_path = os.path.join(images_path, "region_luoyang.png")
+    # frame_path = os.path.join(images_path, "role_attributes.png")
+    # frame_path = os.path.join(images_path, "login_role.png")
+    frame_path = os.path.join(images_path, "role_inventory.png")
+
+    train_container.predict_context(frame_path)
 
     # round_auto()
 

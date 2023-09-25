@@ -26,11 +26,11 @@ class TrainContainer:
         contextClassifier = ContextClassifier(self.context_paths)
         contextClassifier.executable_train()
 
-    def predict_context(self):
+    def predict_context(self, frame_path):
         print('Start predict_context')
 
         contextClassifier = ContextClassifier(self.context_paths)
-        contextClassifier.executable_train()
+        contextClassifier.executable_predict(frame_path)
 
     def train_object(self):
         print('Start train_object')
